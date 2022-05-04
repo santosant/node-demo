@@ -44,41 +44,59 @@ function obterEndereco(idUsuario, callback) {
   }, 2000);
 }
 
-const userPromise = obterUsuario();
+// first step, add word async -> automatically returns a Promise
+main();
+async function main() {
+  try {
+    const usuario = await obterUsuario();
+    const telefone = await obeterTelefone(usuario.id);
+    const endereco = await obterEnderecoAsync(usuario.id);
 
-userPromise
-  .then(function (usuario) {
-    return obeterTelefone(usuario.id).then(function resolverTelefone(result) {
-      return {
-        usuario: {
-          nome: usuario.nome,
-          id: usuario.id,
-        },
-        telefone: result,
-      };
-    });
-  })
-  .then(function (resultado) {
-    const endereco = obterEnderecoAsync(resultado.usuario.id);
-    return endereco.then(function resolverEndereco(result) {
-      return {
-        usuario: resultado.usuario,
-        telefone: resultado.telefone,
-        endereco: result,
-      };
-    });
-  })
-  .then(function (result) {
     console.log(`
-      Id: ${result.usuario.id}
-      Nome: ${result.usuario.nome}
-      Endereco: ${result.endereco.rua} ${result.endereco.numero}
-      Telefone": (${result.telefone.ddd}) ${result.telefone.telefone}
+      nome: ${usuario.nome},
+      telefone: (${telefone.ddd}) ${telefone.telefone},
+      endereco: ${endereco.rua}, ${endereco.numero}
     `);
-  })
-  .catch(function (error) {
+  } catch (error) {
     console.error('deu ruim', error);
-  });
+  }
+}
+
+// const userPromise = obterUsuario();
+
+// userPromise
+//   .then(function (usuario) {
+//     return obeterTelefone(usuario.id).then(function resolverTelefone(result) {
+//       return {
+//         usuario: {
+//           nome: usuario.nome,
+//           id: usuario.id,
+//         },
+//         telefone: result,
+//       };
+//     });
+//   })
+//   .then(function (resultado) {
+//     const endereco = obterEnderecoAsync(resultado.usuario.id);
+//     return endereco.then(function resolverEndereco(result) {
+//       return {
+//         usuario: resultado.usuario,
+//         telefone: resultado.telefone,
+//         endereco: result,
+//       };
+//     });
+//   })
+//   .then(function (result) {
+//     console.log(`
+//       Id: ${result.usuario.id}
+//       Nome: ${result.usuario.nome}
+//       Endereco: ${result.endereco.rua} ${result.endereco.numero}
+//       Telefone": (${result.telefone.ddd}) ${result.telefone.telefone}
+//     `);
+//   })
+//   .catch(function (error) {
+//     console.error('deu ruim', error);
+//   });
 
 // para minupular com sucesso usamos a function .then
 // para manipular erros, usamos .catch
